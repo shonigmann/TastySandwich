@@ -1,10 +1,11 @@
 import java.awt.Color;
+import java.util.ArrayList;
 
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimModelImpl;
 import uchicago.src.sim.engine.SimInit;
 import uchicago.src.sim.gui.DisplaySurface;
-
+import uchicago.src.sim.gui.Object2DDisplay;
 import uchicago.src.sim.gui.ColorMap;
 import uchicago.src.sim.gui.Value2DDisplay;
 
@@ -18,20 +19,33 @@ import uchicago.src.sim.gui.Value2DDisplay;
 
 public class RabbitsGrassSimulationModel extends SimModelImpl {
 
-	private static final int GRID_SIZE = 10;
-	private static final int AMOUNT_RABBITS = 20;
+	// CONSTANTS
+	// Display Parameters
+	private static final int GRID_SIZE = 20;
+
+	// Grass Parameters
 	private static final int AMOUNT_GRASS = 20;
-	private static final int BIRTH_THRESHOLD = 15;
 	private static final int GRASS_GROWTH_RATE = 2;
 
+	// Rabbit Parameters
+	private static final int AMOUNT_RABBITS = 20;
+	private static final int BIRTH_THRESHOLD = 15;
+	private static final int RABBIT_START_ENERGY = 30;
+	private static final int MAX_RABBITS = GRID_SIZE * GRID_SIZE;
+
+	// VARIABLES
 	private int gridSize = GRID_SIZE;
 	private int amountRabbits = AMOUNT_RABBITS;
 	private int birthThreshold = BIRTH_THRESHOLD;
 	private int grassGrowthRate = GRASS_GROWTH_RATE;
+	private int rabbitEnergy = RABBIT_START_ENERGY;
+	private int maxRabbits = MAX_RABBITS;
 
 	private Schedule schedule;
 
-	private RabbitsGrassSimulationSpace rabbitsSpace;
+	private RabbitsGrassSimulationSpace rgsSpace; //changed to rgs from rabbit as the space also includes grass. not just rabbits
+
+	private ArrayList<RabbitsGrassSimulationAgent> rabbitList;
 
 	private DisplaySurface displaySurf;
 
@@ -47,7 +61,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		buildModel();
 		buildSchedule();
 		buildDisplay();
-		
+
 		displaySurf.display();
 	}
 
@@ -67,7 +81,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	public void setup() {
 		System.out.println("Running setup");
-		rabbitsSpace = null;
+		rgsSpace = null;
+		rabbitList = new ArrayList<RabbitsGrassSimulationAgent>();
 
 		if (displaySurf != null) {
 			displaySurf.dispose();
@@ -81,9 +96,18 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	public void buildModel() {
 		System.out.println("Running BuildModel");
-		rabbitsSpace = new RabbitsGrassSimulationSpace(gridSize);
-		rabbitsSpace.spreadRabbits(amountRabbits);
-		rabbitsSpace.spreadGrass(AMOUNT_GRASS);
+		rgsSpace = new RabbitsGrassSimulationSpace(gridSize);
+		rgsSpace.spreadGrass(AMOUNT_GRASS);
+
+		for (int i = 0; i < amountRabbits; i++) {
+			addNewRabbit();
+		}
+		
+		for(int i = 0; i<rabbitList.size(); i++)
+		{
+			RabbitsGrassSimulationAgent rgsa = rabbitList.get(i);
+			rgsa.report();
+		}
 	}
 
 	public void buildSchedule() {
@@ -98,9 +122,20 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		map.mapColor(0, Color.white);
 		map.mapColor(1, Color.green);
 
-		Value2DDisplay displayGrass = new Value2DDisplay(rabbitsSpace.getCurrentRabbitsSpace(), map);
+		Value2DDisplay displayGrass = new Value2DDisplay(rgsSpace.getCurrentGrassSpace(), map);
 
+		Object2DDisplay displayRabbits = new Object2DDisplay(rgsSpace.getCurrentRabbitSpace());
+		displayRabbits.setObjectList(rabbitList);
+		
 		displaySurf.addDisplayable(displayGrass, "Grass");
+		displaySurf.addDisplayable(displayRabbits, "Rabbits");
+	}
+
+	private void addNewRabbit(){
+		//Create new rabbit and store it in the list
+		RabbitsGrassSimulationAgent bunny = new RabbitsGrassSimulationAgent(rabbitEnergy);
+		rabbitList.add(bunny);
+		rgsSpace.addRabbit(bunny);
 	}
 
 	public int getGridSize() {
@@ -109,6 +144,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	public void setGridSize(int newGridSize) {
 		gridSize = newGridSize;
+		// scales the maximum number of rabbits according to the selected grid size
+		setMaxRabbits(newGridSize * newGridSize); 
 	}
 
 	public int getAmountRabbits() {
@@ -135,4 +172,19 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		grassGrowthRate = newGrassGrowthRate;
 	}
 
+	public void setRabbitEnergy(int newRabbitEnergy) {
+		rabbitEnergy = newRabbitEnergy;
+	}
+
+	public int getRabbitEnergy() {
+		return rabbitEnergy;
+	}
+
+	public void setMaxRabbits(int newMaxRabbits) {
+		maxRabbits = newMaxRabbits;
+	}
+
+	public int getMaxRabbits() {
+		return maxRabbits;
+	}
 }
