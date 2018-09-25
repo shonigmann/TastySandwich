@@ -55,7 +55,7 @@ public class RabbitsGrassSimulationSpace {
 		return rabbitSpace;
 	}
 	
-	public boolean isSpaceOccupied(int x, int y)
+	public boolean isCellOccupied(int x, int y)
 	{
 		boolean retVal = false;
 		if(rabbitSpace.getObjectAt(x, y) != null) retVal = true;
@@ -73,7 +73,7 @@ public class RabbitsGrassSimulationSpace {
 			int x = (int) (Math.random()*rabbitSpace.getSizeX());
 			int y = (int) (Math.random()*rabbitSpace.getSizeY());
 			
-			if (isSpaceOccupied(x,y)==false)
+			if (isCellOccupied(x,y)==false)
 			{
 				rabbitSpace.putObjectAt(x,y,bunny);
 				bunny.setXY(x, y);

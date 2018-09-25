@@ -58,8 +58,8 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	}
 
 	public void report(){
-		System.out.println(	getID() + " at " + xPosition + "," 
-							+ yPosition + "has " + getEnergy() + "");
+		System.out.println(	getID() + " at (" + xPosition + "," 
+							+ yPosition + ") has " + getEnergy() + "");
 	}
 		
 	public void draw(SimGraphics G){
