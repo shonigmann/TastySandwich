@@ -62,6 +62,16 @@ public class RabbitsGrassSimulationSpace {
 		return retVal;
 	}
 	
+	/**
+	 * Randomly add the RabbitsGrassSimulationAgent bunny somewhere in the rabbitSpace
+	 * @param bunny RabbitsGrassSimulationAgent to be added to the rabbitSpace
+	 * @return true if the adding was successful, false otherwise
+	 */
+	/* TODO: Improve function so it'll only return false if the space is already full.
+	 * In its current state, it could simply randomly select the same cell several times,
+	 * then reach countLimit, and then exit the function returning false
+	 */
+	
 	public boolean addRabbit(RabbitsGrassSimulationAgent bunny)
 	{
 		boolean retVal = false;
