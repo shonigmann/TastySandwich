@@ -124,6 +124,11 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					rgsa.step();
 				}
 				
+				int deadRabbits = reapDeadRabbits();
+		        for(int i = 0; i < deadRabbits; i++){
+		          addNewRabbit();
+		        }
+				
 		        displaySurf.updateDisplay();
 			}
 		}
@@ -153,6 +158,24 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		RabbitsGrassSimulationAgent bunny = new RabbitsGrassSimulationAgent(rabbitEnergy);
 		rabbitList.add(bunny);
 		rgsSpace.addRabbit(bunny);
+	}
+	
+	/**
+	 * Find all the rabbits in the space whose energy is strictly lower than 1, 
+	 * remove them from the space and then remove them from the rabbitList of this Model
+	 * @return the amount of dead rabbits
+	 */
+	private int reapDeadRabbits() {
+		int count = 0;
+		for (int i = (rabbitList.size() - 1); i >= 0; i--) {
+			RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) rabbitList.get(i);
+			if (rgsa.getEnergy() < 1) {
+				rgsSpace.removeRabbitAt(rgsa.getX(), rgsa.getY());
+				rabbitList.remove(i);
+				count++;
+			}
+		} 
+		return count;
 	}
 
 	public int getGridSize() {

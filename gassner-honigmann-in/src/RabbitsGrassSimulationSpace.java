@@ -94,4 +94,8 @@ public class RabbitsGrassSimulationSpace {
 		
 		return retVal;
 	}
+	
+	public void removeRabbitAt(int x, int y) {
+		rabbitSpace.putObjectAt(x, y, null);
+	}
 }
