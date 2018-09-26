@@ -123,10 +123,12 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) rabbitList.get(i);
 					rgsa.step();
 				}
+				
+		        displaySurf.updateDisplay();
 			}
 		}
 		
-	     schedule.scheduleActionBeginning(0, new RabbitsGrassSimulationStep());
+	    schedule.scheduleActionBeginning(0, new RabbitsGrassSimulationStep());
 	}
 
 	public void buildDisplay() {
