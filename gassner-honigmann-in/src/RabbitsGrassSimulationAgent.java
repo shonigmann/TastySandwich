@@ -18,6 +18,8 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	private int energy;
 	private static int IDNumber = 0;
 	private int ID;
+	private RabbitsGrassSimulationSpace rgsSpace;
+	
 	
 	public RabbitsGrassSimulationAgent(int startEnergy)
 	{
@@ -40,6 +42,10 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	public void setXY(int newXPosition, int newYPosition) {
 		xPosition = newXPosition;
 		yPosition = newYPosition;
+	}
+	
+	public void setRabbitsGrassSimulationSpace(RabbitsGrassSimulationSpace rgs){
+		rgsSpace = rgs;
 	}
 	
 	public String getID()

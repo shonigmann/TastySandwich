@@ -87,6 +87,7 @@ public class RabbitsGrassSimulationSpace {
 			{
 				rabbitSpace.putObjectAt(x,y,bunny);
 				bunny.setXY(x, y);
+				bunny.setRabbitsGrassSimulationSpace(this);
 				retVal = true;
 			}
 			count++;
