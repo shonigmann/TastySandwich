@@ -55,12 +55,22 @@ public class RabbitsGrassSimulationSpace {
 		return rabbitSpace;
 	}
 	
-	public boolean isSpaceOccupied(int x, int y)
+	public boolean isCellOccupied(int x, int y)
 	{
 		boolean retVal = false;
 		if(rabbitSpace.getObjectAt(x, y) != null) retVal = true;
 		return retVal;
 	}
+	
+	/**
+	 * Randomly add the RabbitsGrassSimulationAgent bunny somewhere in the rabbitSpace
+	 * @param bunny RabbitsGrassSimulationAgent to be added to the rabbitSpace
+	 * @return true if the adding was successful, false otherwise
+	 */
+	/* TODO: Improve function so it'll only return false if the space is already full.
+	 * In its current state, it could simply randomly select the same cell several times,
+	 * then reach countLimit, and then exit the function returning false
+	 */
 	
 	public boolean addRabbit(RabbitsGrassSimulationAgent bunny)
 	{
@@ -73,7 +83,7 @@ public class RabbitsGrassSimulationSpace {
 			int x = (int) (Math.random()*rabbitSpace.getSizeX());
 			int y = (int) (Math.random()*rabbitSpace.getSizeY());
 			
-			if (isSpaceOccupied(x,y)==false)
+			if (isCellOccupied(x,y)==false)
 			{
 				rabbitSpace.putObjectAt(x,y,bunny);
 				bunny.setXY(x, y);
@@ -83,5 +93,9 @@ public class RabbitsGrassSimulationSpace {
 		}
 		
 		return retVal;
+	}
+	
+	public void removeRabbitAt(int x, int y) {
+		rabbitSpace.putObjectAt(x, y, null);
 	}
 }

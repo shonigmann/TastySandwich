@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.util.ArrayList;
 
+import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimModelImpl;
 import uchicago.src.sim.engine.SimInit;
@@ -8,6 +9,7 @@ import uchicago.src.sim.gui.DisplaySurface;
 import uchicago.src.sim.gui.Object2DDisplay;
 import uchicago.src.sim.gui.ColorMap;
 import uchicago.src.sim.gui.Value2DDisplay;
+import uchicago.src.sim.util.SimUtilities;
 
 /**
  * Class that implements the simulation model for the rabbits grass simulation.
@@ -83,7 +85,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		System.out.println("Running setup");
 		rgsSpace = null;
 		rabbitList = new ArrayList<RabbitsGrassSimulationAgent>();
-
+	    schedule = new Schedule(1); //Schedule with a step interval of 1
+	    
 		if (displaySurf != null) {
 			displaySurf.dispose();
 		}
@@ -112,6 +115,25 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	public void buildSchedule() {
 		System.out.println("Running BuildSchedule");
+		
+		class RabbitsGrassSimulationStep extends BasicAction {
+			public void execute() {
+				SimUtilities.shuffle(rabbitList);
+				for (int i = 0; i < rabbitList.size(); i++) {
+					RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) rabbitList.get(i);
+					rgsa.step();
+				}
+				
+				int deadRabbits = reapDeadRabbits();
+		        for(int i = 0; i < deadRabbits; i++){
+		          addNewRabbit();
+		        }
+				
+		        displaySurf.updateDisplay();
+			}
+		}
+		
+	    schedule.scheduleActionBeginning(0, new RabbitsGrassSimulationStep());
 	}
 
 	public void buildDisplay() {
@@ -136,6 +158,24 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		RabbitsGrassSimulationAgent bunny = new RabbitsGrassSimulationAgent(rabbitEnergy);
 		rabbitList.add(bunny);
 		rgsSpace.addRabbit(bunny);
+	}
+	
+	/**
+	 * Find all the rabbits in the space whose energy is strictly lower than 1, 
+	 * remove them from the space and then remove them from the rabbitList of this Model
+	 * @return the amount of dead rabbits
+	 */
+	private int reapDeadRabbits() {
+		int count = 0;
+		for (int i = (rabbitList.size() - 1); i >= 0; i--) {
+			RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) rabbitList.get(i);
+			if (rgsa.getEnergy() < 1) {
+				rgsSpace.removeRabbitAt(rgsa.getX(), rgsa.getY());
+				rabbitList.remove(i);
+				count++;
+			}
+		} 
+		return count;
 	}
 
 	public int getGridSize() {
