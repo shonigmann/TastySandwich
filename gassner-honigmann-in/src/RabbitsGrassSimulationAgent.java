@@ -65,4 +65,8 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	public void draw(SimGraphics G){
 		G.drawFastRoundRect(Color.gray);
 	}
+	
+	 public void step() {
+		 energy--;
+	 }
 }
