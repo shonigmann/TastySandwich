@@ -74,5 +74,6 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	
 	 public void step() {
 		 energy--;
+		 energy += rgsSpace.eatGrassAt(xPosition,yPosition);
 	 }
 }

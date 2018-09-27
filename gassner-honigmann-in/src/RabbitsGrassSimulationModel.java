@@ -42,6 +42,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int grassGrowthRate = GRASS_GROWTH_RATE;
 	private int rabbitEnergy = RABBIT_START_ENERGY;
 	private int maxRabbits = MAX_RABBITS;
+	
 
 	private Schedule schedule;
 
@@ -82,6 +83,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public void setup() {
+		System.out.close();
 		System.out.println("Running setup");
 		rgsSpace = null;
 		rabbitList = new ArrayList<RabbitsGrassSimulationAgent>();
@@ -185,7 +187,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	public void setGridSize(int newGridSize) {
 		gridSize = newGridSize;
 		// scales the maximum number of rabbits according to the selected grid size
-		setMaxRabbits(newGridSize * newGridSize); 
+		setMaxRabbits(gridSize * gridSize); 
 	}
 
 	public int getAmountRabbits() {
