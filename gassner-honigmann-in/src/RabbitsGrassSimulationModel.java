@@ -68,27 +68,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		}
 	}
 	
-	public void begin() {
-		buildModel();
-		buildSchedule();
-		buildDisplay();
-
-		displaySurf.display();
-		populationAmountInSpace.display();
-	}
-
-	public String[] getInitParam() {
-		String[] initParams = { "GridSize", "AmountRabbits", "BirthThreshold", "GrassGrowthRate" };
-		return initParams;
-	}
-
 	public String getName() {
 		return "Rabbits Grass Model";
-	}
-
-	public Schedule getSchedule() {
-		// TODO Auto-generated method stub
-		return schedule;
 	}
 
 	public void setup() {
@@ -109,11 +90,21 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		displaySurf = null;
 
 		displaySurf = new DisplaySurface(this, "Carry Drop Model Window 1");
-
+		populationAmountInSpace = new OpenSequenceGraph("Amount of Rabbits In Space",this);
+		
 		registerDisplaySurface("Rabbit Grass Simulation Model Window 1", displaySurf);
 		this.registerMediaProducer("Plot", populationAmountInSpace);
 	}
+	
+	public void begin() {
+		buildModel();
+		buildSchedule();
+		buildDisplay();
 
+		displaySurf.display();
+		populationAmountInSpace.display();
+	}
+	
 	public void buildModel() {
 		System.out.println("Running BuildModel");
 		rgsSpace = new RabbitsGrassSimulationSpace(gridSize);
@@ -129,7 +120,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			rgsa.report();
 		}
 	}
-
+	
 	public void buildSchedule() {
 		System.out.println("Running BuildSchedule");
 		
@@ -154,13 +145,13 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	    
 	    class RabbitsGrassSimulationCount extends BasicAction {
 	    	public void execute(){
-	    		countRabbits();
+	    		populationAmountInSpace.step();
 	    	}
 	    }
 	    
 	    schedule.scheduleActionAtInterval(10, new RabbitsGrassSimulationCount());
-	}
-
+	}	
+	
 	public void buildDisplay() {
 		System.out.println("Running BuildDisplay");
 
@@ -179,7 +170,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		
 		populationAmountInSpace.addSequence("Rabbits in Space", new populationInSpace());
 	}
-
+	
 	private int countRabbits(){
 		int numberRabbits = 0;
 		for(int i = 0; i < rabbitList.size(); i++)
@@ -227,6 +218,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		setMaxRabbits(gridSize * gridSize); 
 	}
 
+	public String[] getInitParam() {
+		String[] initParams = { "GridSize", "AmountRabbits", "BirthThreshold", "GrassGrowthRate" };
+		return initParams;
+	}	
+
+	public Schedule getSchedule() {
+		// TODO Auto-generated method stub
+		return schedule;
+	}
+	
 	public int getAmountRabbits() {
 		return amountRabbits;
 	}
