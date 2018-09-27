@@ -103,13 +103,21 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 		G.drawFastRoundRect(Color.gray);
 	}
 
-	public void step() {
+	public boolean step(int birthThreshold) {
+		
+		boolean pregnant = false;
 		
 		tryMove();
 		energy--;
-		rgsSpace.eatGrassAt(xPosition, yPosition);
-
+		energy += rgsSpace.eatGrassAt(xPosition, yPosition);
+		
+		if(energy>birthThreshold){
+			pregnant = true;
+		}
+		
+		return pregnant;		
 	}
+	
 	
 	private boolean tryMove(){
 

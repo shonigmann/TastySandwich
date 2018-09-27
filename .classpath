@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="intelagent_jars/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="intelagent_jars/logist.jar"/>
 	<classpathentry kind="lib" path="intelagent_jars/plot.jar"/>
-	<classpathentry kind="lib" path="intelagent_jars/repast.jar"/>
+	<classpathentry kind="lib" path="intelagent_jars/repast.jar" sourcepath="intelagent_jars"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/Simon&apos;s/Documents/EPFL/CS430/TastySandwich/intelagent_jars/commons-math-1.1.jar"/>
 	<classpathentry kind="output" path="gassner-honigmann-in/bin"/>

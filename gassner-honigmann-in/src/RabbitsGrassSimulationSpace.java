@@ -10,7 +10,7 @@ public class RabbitsGrassSimulationSpace {
 	private Object2DGrid grassSpace;
 	private Object2DGrid rabbitSpace;
 
-	private static final int GRASS_ENERGY = 10; // assuming eating grass gives
+	private static final int GRASS_ENERGY = 4; // assuming eating grass gives
 												// 10 energy
 
 	public RabbitsGrassSimulationSpace(int gridSize) {
@@ -34,20 +34,20 @@ public class RabbitsGrassSimulationSpace {
 		}
 	}
 
-	public void spreadGrass(int amountGrass) {
-		int i = 0;
-		while (i < amountGrass) {
+	public void spreadGrass() { //changing this function to only place one tile of grass at a time, that way we can make sure we won't get trapped in a loop
+		//precondition: there must be space for a new tile of grass
+		boolean grassPlaced = false;
+		while (!grassPlaced) {
 			// Choose coordinates
 			int x = (int) (Math.random() * (grassSpace.getSizeX()));
 			int y = (int) (Math.random() * (grassSpace.getSizeY()));
 
 			// Get the value of the object at those coordinates
 			boolean thereIsGrass = isThereGrassAt(x, y);
-
 			// A tile having grass is represented by the integer 1
 			if (!thereIsGrass) {
 				grassSpace.putObjectAt(x, y, new Integer(1));
-				i++;
+				grassPlaced = true;
 			}
 		}
 	}
@@ -126,5 +126,5 @@ public class RabbitsGrassSimulationSpace {
 		}
 		return hasMoved;
 	}
-
+	
 }

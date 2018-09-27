@@ -2,7 +2,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
+import uchicago.src.sim.analysis.BinDataSource;
 import uchicago.src.sim.analysis.DataSource;
+import uchicago.src.sim.analysis.OpenHistogram;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.analysis.Sequence;
 import uchicago.src.sim.engine.BasicAction;
@@ -13,7 +15,9 @@ import uchicago.src.sim.gui.DisplaySurface;
 import uchicago.src.sim.gui.Object2DDisplay;
 import uchicago.src.sim.gui.ColorMap;
 import uchicago.src.sim.gui.Value2DDisplay;
+import uchicago.src.sim.space.Object2DGrid;
 import uchicago.src.sim.util.SimUtilities;
+
 
 /**
  * Class that implements the simulation model for the rabbits grass simulation.
@@ -35,9 +39,13 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	// Rabbit Parameters
 	private static final int AMOUNT_RABBITS = 20;
-	private static final int BIRTH_THRESHOLD = 15;
-	private static final int RABBIT_START_ENERGY = 30;
+	private static final int BIRTH_THRESHOLD = 20;
+	private static final int RABBIT_START_ENERGY = 15;
 	private static final int MAX_RABBITS = GRID_SIZE * GRID_SIZE;
+	private static final int GRAPH_UPDATE_PERIOD = 1; 
+	private static final int NUM_BINS = 10;
+	private static final int LOWER_BOUND = 0;
+	private static final int BIRTH_ENERGY_COST = 15;
 
 	// VARIABLES
 	private int gridSize = GRID_SIZE;
@@ -46,25 +54,49 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int grassGrowthRate = GRASS_GROWTH_RATE;
 	private int rabbitEnergy = RABBIT_START_ENERGY;
 	private int maxRabbits = MAX_RABBITS;
+	private int currentNumberRabbits = AMOUNT_RABBITS;
 	
 
+	private static RabbitsGrassSimulationModel model; //testing this out to see if i can programmatically end the simulation when all the rabbits die.
+	
 	private Schedule schedule;
 
 	private OpenSequenceGraph populationAmountInSpace;
-
+	private OpenHistogram rabbitsEnergyDistribution;
+	
 	private RabbitsGrassSimulationSpace rgsSpace; //changed to rgs from rabbit as the space also includes grass. not just rabbits
 
 	private ArrayList<RabbitsGrassSimulationAgent> rabbitList;
 
 	private DisplaySurface displaySurf;
 
-	class populationInSpace implements DataSource, Sequence {
+	class rabbitsInSpace implements DataSource, Sequence {
 		public Object execute() {
 			return new Double(getSValue());
 		}
 		
 		public double getSValue() {
 			return (double) getTotalRabbits();
+		}
+	}
+	
+	class grassInSpace implements DataSource, Sequence {
+		public Object execute() {
+			return new Double(getSValue());
+		}
+		
+		public double getSValue() {
+			return (double) getTotalGrass();
+		}
+	}
+	
+	class rabbitsEnergy implements BinDataSource{
+		public double getBinValue(Object o){
+			RabbitsGrassSimulationAgent rabbit = (RabbitsGrassSimulationAgent)o;
+			if (rabbit == null)
+				return new Double(0);
+			else
+				return (double)rabbit.getEnergy();
 		}
 	}
 	
@@ -88,9 +120,15 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			displaySurf.dispose();
 		}
 		displaySurf = null;
+		
+		if (rabbitsEnergyDistribution != null){
+			rabbitsEnergyDistribution.dispose();
+		}
+		rabbitsEnergyDistribution = null;
 
 		displaySurf = new DisplaySurface(this, "Carry Drop Model Window 1");
 		populationAmountInSpace = new OpenSequenceGraph("Amount of Rabbits In Space",this);
+		rabbitsEnergyDistribution = new OpenHistogram("Rabbit Energy",NUM_BINS,LOWER_BOUND);
 		
 		registerDisplaySurface("Rabbit Grass Simulation Model Window 1", displaySurf);
 		this.registerMediaProducer("Plot", populationAmountInSpace);
@@ -103,12 +141,13 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 		displaySurf.display();
 		populationAmountInSpace.display();
+		rabbitsEnergyDistribution.display();
 	}
 	
 	public void buildModel() {
 		System.out.println("Running BuildModel");
 		rgsSpace = new RabbitsGrassSimulationSpace(gridSize);
-		rgsSpace.spreadGrass(AMOUNT_GRASS);
+		tryGrowGrass();
 
 		for (int i = 0; i < amountRabbits; i++) {
 			addNewRabbit();
@@ -127,17 +166,31 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		class RabbitsGrassSimulationStep extends BasicAction {
 			public void execute() {
 				SimUtilities.shuffle(rabbitList);
-				for (int i = 0; i < rabbitList.size(); i++) {
+				boolean pregnant;
+				reapDeadRabbits();
+				int currentRabbitPopulationSize = rabbitList.size();
+				for (int i = 0; i < currentRabbitPopulationSize; i++) {
 					RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) rabbitList.get(i);
-					rgsa.step();
+					pregnant = rgsa.step(birthThreshold);	
+					if(pregnant && countRabbits()<maxRabbits) //if rabbit exceeds birth threshold, it can reproduce. Only reproduce if there is space for new rabbits.
+					{
+						addNewRabbit();
+						rgsa.setEnergy(rgsa.getEnergy()-BIRTH_ENERGY_COST);
+					}
 				}
 				
-				int deadRabbits = reapDeadRabbits();
-//		        for(int i = 0; i < deadRabbits; i++){
-//		          addNewRabbit();
-//		        }
-				
+				//after rabbits move, grass has a chance to grow again. Only spread while there are still rabbits. 
+				if(countRabbits()>0)
+					tryGrowGrass();
+					
 		        displaySurf.updateDisplay();
+		        
+		        //end simulation if appropriate
+		        if(countRabbits()>0 && countGrass()== maxRabbits){
+		    		//model.stop(); //see if this works? it does. Need to stop graphs too though.
+		    		model.pause();
+		        }
+		        	
 			}
 		}
 		
@@ -148,8 +201,20 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	    		populationAmountInSpace.step();
 	    	}
 	    }
+	      
+	    schedule.scheduleActionAtInterval(GRAPH_UPDATE_PERIOD, new RabbitsGrassSimulationCount());
 	    
-	    schedule.scheduleActionAtInterval(10, new RabbitsGrassSimulationCount());
+	    class SimulationUpdateRabbitEnergy extends BasicAction{
+	    	public void execute(){
+	    		//if(rabbitList.size()>0)
+	    			rabbitsEnergyDistribution.step();
+	    		//else{
+	    			//rabbitsEnergyDistribution.updateGraph();
+	    		//}
+	    	}
+	    }
+	    
+	    schedule.scheduleActionAtInterval(GRAPH_UPDATE_PERIOD, new SimulationUpdateRabbitEnergy());
 	}	
 	
 	public void buildDisplay() {
@@ -168,7 +233,10 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		displaySurf.addDisplayableProbeable(displayGrass, "Grass");
 		displaySurf.addDisplayableProbeable(displayRabbits, "Rabbits");
 		
-		populationAmountInSpace.addSequence("Rabbits in Space", new populationInSpace());
+		populationAmountInSpace.addSequence("Rabbits in Space", new rabbitsInSpace());
+		populationAmountInSpace.addSequence("Grass in Space", new grassInSpace());
+		rabbitsEnergyDistribution.createHistogramItem("Rabbit Energy", rabbitList, new rabbitsEnergy());
+		
 	}
 	
 	private int countRabbits(){
@@ -180,6 +248,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				numberRabbits++;
 		}
 		System.out.println("Number of rabbits is "+numberRabbits);
+		currentNumberRabbits = numberRabbits;
 		return numberRabbits;
 	}
 	
@@ -189,7 +258,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		rabbitList.add(bunny);
 		rgsSpace.addRabbit(bunny);
 	}
-	
+		
 	/**
 	 * Find all the rabbits in the space whose energy is strictly lower than 1, 
 	 * remove them from the space and then remove them from the rabbitList of this Model
@@ -205,6 +274,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				count++;
 			}
 		} 
+		currentNumberRabbits -= count;
 		return count;
 	}
 
@@ -212,6 +282,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		return gridSize;
 	}
 
+	private void tryGrowGrass(){
+		int i = 0;
+		int totalGrass = countGrass();
+		while(i<GRASS_GROWTH_RATE && totalGrass < maxRabbits)		{
+			rgsSpace.spreadGrass();		//modified such that function call only places one grass tile
+			totalGrass++;
+			i++;
+		}
+	}
+	
 	public void setGridSize(int newGridSize) {
 		gridSize = newGridSize;
 		// scales the maximum number of rabbits according to the selected grid size
@@ -289,12 +369,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	public int getTotalRabbits(){
 		return rabbitList.size();
 	}
+
+	public int getTotalGrass(){
+		return countGrass();
+	}
 	
 	public static void main(String[] args) {
 
 		System.out.println("Rabbit skeleton");
 		SimInit init = new SimInit();
-		RabbitsGrassSimulationModel model = new RabbitsGrassSimulationModel();
+		model = new RabbitsGrassSimulationModel();
 		init.loadModel(model, "", false);
 	}
 
