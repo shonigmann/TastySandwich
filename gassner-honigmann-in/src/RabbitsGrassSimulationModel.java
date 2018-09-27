@@ -127,9 +127,9 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				}
 				
 				int deadRabbits = reapDeadRabbits();
-		        for(int i = 0; i < deadRabbits; i++){
-		          addNewRabbit();
-		        }
+//		        for(int i = 0; i < deadRabbits; i++){
+//		          addNewRabbit();
+//		        }
 				
 		        displaySurf.updateDisplay();
 			}
