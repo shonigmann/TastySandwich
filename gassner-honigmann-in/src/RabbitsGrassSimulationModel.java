@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
@@ -195,7 +196,12 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public void setAmountRabbits(int newAmountRabbits) {
-		amountRabbits = newAmountRabbits;
+		if (newAmountRabbits > maxRabbits)
+		{
+			JOptionPane.showMessageDialog(null, "Error: Too many rabbits. Please select a value less than: "+maxRabbits+". Value unchanged.", "Warning: Rabbit Overload", JOptionPane.INFORMATION_MESSAGE);
+		}
+		else
+			amountRabbits = newAmountRabbits;
 	}
 
 	public int getBirthThreshold() {
