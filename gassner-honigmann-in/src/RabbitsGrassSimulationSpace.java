@@ -126,4 +126,5 @@ public class RabbitsGrassSimulationSpace {
 		}
 		return hasMoved;
 	}
+
 }

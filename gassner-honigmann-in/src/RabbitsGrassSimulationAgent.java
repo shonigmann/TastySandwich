@@ -148,4 +148,5 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 				
 		return hasMoved;
 	}
+	
 }

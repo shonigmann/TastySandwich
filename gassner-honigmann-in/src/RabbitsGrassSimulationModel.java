@@ -2,6 +2,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
+import uchicago.src.sim.analysis.DataSource;
+import uchicago.src.sim.analysis.OpenSequenceGraph;
+import uchicago.src.sim.analysis.Sequence;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimModelImpl;
@@ -47,26 +50,31 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	private Schedule schedule;
 
+	private OpenSequenceGraph populationAmountInSpace;
+
 	private RabbitsGrassSimulationSpace rgsSpace; //changed to rgs from rabbit as the space also includes grass. not just rabbits
 
 	private ArrayList<RabbitsGrassSimulationAgent> rabbitList;
 
 	private DisplaySurface displaySurf;
 
-	public static void main(String[] args) {
-
-		System.out.println("Rabbit skeleton");
-		SimInit init = new SimInit();
-		RabbitsGrassSimulationModel model = new RabbitsGrassSimulationModel();
-		init.loadModel(model, "", false);
+	class populationInSpace implements DataSource, Sequence {
+		public Object execute() {
+			return new Double(getSValue());
+		}
+		
+		public double getSValue() {
+			return (double) getTotalRabbits();
+		}
 	}
-
+	
 	public void begin() {
 		buildModel();
 		buildSchedule();
 		buildDisplay();
 
 		displaySurf.display();
+		populationAmountInSpace.display();
 	}
 
 	public String[] getInitParam() {
@@ -90,6 +98,11 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		rabbitList = new ArrayList<RabbitsGrassSimulationAgent>();
 	    schedule = new Schedule(1); //Schedule with a step interval of 1
 	    
+	    if(populationAmountInSpace != null){
+	    	populationAmountInSpace.dispose();
+	    }
+	    populationAmountInSpace = null; 
+	    
 		if (displaySurf != null) {
 			displaySurf.dispose();
 		}
@@ -98,6 +111,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		displaySurf = new DisplaySurface(this, "Carry Drop Model Window 1");
 
 		registerDisplaySurface("Rabbit Grass Simulation Model Window 1", displaySurf);
+		this.registerMediaProducer("Plot", populationAmountInSpace);
 	}
 
 	public void buildModel() {
@@ -137,6 +151,14 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		}
 		
 	    schedule.scheduleActionBeginning(0, new RabbitsGrassSimulationStep());
+	    
+	    class RabbitsGrassSimulationCount extends BasicAction {
+	    	public void execute(){
+	    		countRabbits();
+	    	}
+	    }
+	    
+	    schedule.scheduleActionAtInterval(10, new RabbitsGrassSimulationCount());
 	}
 
 	public void buildDisplay() {
@@ -152,10 +174,24 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		Object2DDisplay displayRabbits = new Object2DDisplay(rgsSpace.getCurrentRabbitSpace());
 		displayRabbits.setObjectList(rabbitList);
 		
-		displaySurf.addDisplayable(displayGrass, "Grass");
-		displaySurf.addDisplayable(displayRabbits, "Rabbits");
+		displaySurf.addDisplayableProbeable(displayGrass, "Grass");
+		displaySurf.addDisplayableProbeable(displayRabbits, "Rabbits");
+		
+		populationAmountInSpace.addSequence("Rabbits in Space", new populationInSpace());
 	}
 
+	private int countRabbits(){
+		int numberRabbits = 0;
+		for(int i = 0; i < rabbitList.size(); i++)
+		{
+			RabbitsGrassSimulationAgent bunny = (RabbitsGrassSimulationAgent)rabbitList.get(i);
+			if(bunny.getEnergy()>0) 
+				numberRabbits++;
+		}
+		System.out.println("Number of rabbits is "+numberRabbits);
+		return numberRabbits;
+	}
+	
 	private void addNewRabbit(){
 		//Create new rabbit and store it in the list
 		RabbitsGrassSimulationAgent bunny = new RabbitsGrassSimulationAgent(rabbitEnergy);
@@ -235,4 +271,30 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	public int getMaxRabbits() {
 		return maxRabbits;
 	}
+	
+	public int countGrass(){
+		int numberGrass = 0;
+		for(int i = 0; i<gridSize;i++){
+			for(int j=0; j<gridSize; j++){
+				
+				if(rgsSpace.isThereGrassAt(i,j)){
+					numberGrass += 1; 
+				}
+			}
+		}
+		return numberGrass;
+	}
+	
+	public int getTotalRabbits(){
+		return rabbitList.size();
+	}
+	
+	public static void main(String[] args) {
+
+		System.out.println("Rabbit skeleton");
+		SimInit init = new SimInit();
+		RabbitsGrassSimulationModel model = new RabbitsGrassSimulationModel();
+		init.loadModel(model, "", false);
+	}
+
 }
