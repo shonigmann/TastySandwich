@@ -94,7 +94,7 @@ public class RabbitsGrassSimulationSpace {
 		boolean retVal = false;
 		int count = 0;
 		int countLimit = rabbitSpace.getSizeX() * rabbitSpace.getSizeY();
-
+		
 		while ((retVal == false) && (count < countLimit)) {
 			int x = (int) (Math.random() * rabbitSpace.getSizeX());
 			int y = (int) (Math.random() * rabbitSpace.getSizeY());

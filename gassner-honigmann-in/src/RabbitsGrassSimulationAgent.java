@@ -3,9 +3,9 @@ import uchicago.src.sim.gui.SimGraphics;
 
 import java.awt.Color;
 import java.util.ArrayList;
-
-import uchicago.src.sim.gui.Drawable;
-import uchicago.src.sim.gui.SimGraphics;
+//
+//import uchicago.src.sim.gui.Drawable;
+//import uchicago.src.sim.gui.SimGraphics;
 import uchicago.src.sim.space.Object2DGrid;
 
 /**
@@ -122,7 +122,7 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	private boolean tryMove(){
 
 		boolean hasMoved = false; 
-		
+				
 		ArrayList<Integer> directions = new ArrayList<Integer>();
 		directions.add(new Integer(0));
 		directions.add(new Integer(1));
@@ -139,7 +139,7 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 			int d = setVxVy();
 			int t = directions.indexOf(new Integer(d));
 			
-			while(t<0){
+			while(t<0 && directions.size()>0){
 				 d = setVxVy();
 				 t = directions.indexOf(new Integer(d));					
 			}
