@@ -39,7 +39,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	// Rabbit Parameters
 	private static final int AMOUNT_RABBITS = 3;
 	private static final int BIRTH_THRESHOLD = 20;
-	private static final int RABBIT_START_ENERGY = 25;
+	private static final int RABBIT_START_ENERGY = 20;
 	private static final int MAX_RABBITS = GRID_SIZE * GRID_SIZE;
 	private static final int GRAPH_UPDATE_PERIOD = 1;
 	private static final int NUM_BINS = 10;
@@ -266,8 +266,10 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private void addNewRabbit() {
 		// Create new rabbit and store it in the list
 		RabbitsGrassSimulationAgent bunny = new RabbitsGrassSimulationAgent(rabbitEnergy);
-		rabbitList.add(bunny);
-		rgsSpace.addRabbit(bunny);
+	
+		if(rgsSpace.addRabbit(bunny)){
+			rabbitList.add(bunny);
+		}
 	}
 
 	/**
@@ -280,7 +282,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int reapDeadRabbits() {
 		int count = 0;
 		for (int i = (rabbitList.size() - 1); i >= 0; i--) {
-			RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) rabbitList.get(i);
+			RabbitsGrassSimulationAgent rgsa = rabbitList.get(i);
 			if (rgsa.getEnergy() < 1) {
 				rgsSpace.removeRabbitAt(rgsa.getX(), rgsa.getY());
 				rabbitList.remove(i);
