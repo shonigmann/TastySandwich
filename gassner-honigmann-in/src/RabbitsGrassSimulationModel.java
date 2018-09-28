@@ -30,21 +30,21 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	// CONSTANTS
 	// Display Parameters
-	private static final int GRID_SIZE = 2;
+	private static final int GRID_SIZE = 30;
 
 	// Grass Parameters
-	private static final int AMOUNT_GRASS = 4;
-	private static final int GRASS_GROWTH_RATE = 1;
+	private static final int AMOUNT_GRASS = 40;
+	private static final int GRASS_GROWTH_RATE = 30;
 
 	// Rabbit Parameters
-	private static final int AMOUNT_RABBITS = 3;
+	private static final int AMOUNT_RABBITS = 30;
 	private static final int BIRTH_THRESHOLD = 20;
 	private static final int RABBIT_START_ENERGY = 20;
 	private static final int MAX_RABBITS = GRID_SIZE * GRID_SIZE;
 	private static final int GRAPH_UPDATE_PERIOD = 1;
-	private static final int NUM_BINS = 10;
+	private static final int NUM_BINS = 30;
 	private static final int LOWER_BOUND = 0;
-	private static final int UPPER_BOUND = 100;
+	private static final int UPPER_BOUND = 50;
 	private static final int BIRTH_ENERGY_COST = 15;
 
 	// VARIABLES
@@ -55,7 +55,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int rabbitEnergy = RABBIT_START_ENERGY;
 	private int maxRabbits = MAX_RABBITS;
 	private int currentNumberRabbits = AMOUNT_RABBITS;
-
+	private int stopNow = 0;
 	private static RabbitsGrassSimulationModel model; // testing this out to see
 														// if i can
 														// programmatically end
@@ -201,11 +201,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				tryGrowGrass(grassGrowthRate);
 
 				displaySurf.updateDisplay();
-
-				// end simulation if appropriate
-				if (countRabbits() == 0 && countGrass() == maxRabbits) {
+				
+				if (stopNow > 10) { //check for condition before the condition is changed so we get one extra time step delay
 					model.stop();
 				}
+				// end simulation if appropriate
+				if (countRabbits() == 0) {
+					if(countGrass() == maxRabbits || grassGrowthRate == 0) //this should let the grass fill in before ending the simulation.
+						stopNow++;
+				}
+
 
 			}
 		}
@@ -309,10 +314,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public void setGridSize(int newGridSize) {
-		gridSize = newGridSize;
 		// scales the maximum number of rabbits according to the selected grid
 		// size
 		setMaxRabbits(gridSize * gridSize);
+		if (newGridSize < 1) {
+	
+			JOptionPane.showMessageDialog(null,
+					"Error: Positive Grid Size Required. System value unchanged.",
+					"Warning: Existential Crisis", JOptionPane.INFORMATION_MESSAGE);
+		} else
+			gridSize = newGridSize;
 	}
 
 	public String[] getInitParam() {
