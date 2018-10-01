@@ -41,9 +41,9 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private static final int RABBIT_START_ENERGY = 20;
 	private static final int MAX_RABBITS = GRID_SIZE * GRID_SIZE;
 	private static final int GRAPH_UPDATE_PERIOD = 1;
-	private static final int NUM_BINS = 30;
+	private static final int NUM_BINS = 50;
 	private static final int LOWER_BOUND = 0;
-	private static final int UPPER_BOUND = 50;
+	private static final int UPPER_BOUND = 100;
 	private static final int BIRTH_ENERGY_COST = 15;
 
 	// VARIABLES
@@ -57,6 +57,10 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int stopNow = 0;
 	private static RabbitsGrassSimulationModel model;
 
+	
+	//REPORT
+	private static int tickCount;
+	
 	private Schedule schedule;
 
 	private OpenSequenceGraph populationAmountInSpace;
@@ -127,6 +131,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		populationAmountInSpace = new OpenSequenceGraph("Amount of Rabbits In Space", this);
 		rabbitsEnergyDistribution = new Histogram("Rabbit Energy", NUM_BINS, (double) LOWER_BOUND,
 				(double) UPPER_BOUND);
+		rabbitsEnergyDistribution.setYRange(0, 1000);
 
 		registerDisplaySurface("Rabbit Grass Simulation Model Window 1", displaySurf);
 		this.registerMediaProducer("Plot", populationAmountInSpace);
@@ -136,7 +141,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		buildModel();
 		buildSchedule();
 		buildDisplay();
-
+		
+		tickCount = 0;//REPORT
 		stopNow = 0; // needed this to keep things from stopping if you run the model multiple times
 						// in a row
 
@@ -164,6 +170,12 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 		class RabbitsGrassSimulationStep extends BasicAction {
 			public void execute() {
+				//REPORT
+				tickCount++;
+				if (tickCount > 1000) {
+					model.stop();
+				}
+				//!REPORT
 				SimUtilities.shuffle(rabbitList);
 				boolean pregnant;
 				reapDeadRabbits();
