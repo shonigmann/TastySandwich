@@ -137,8 +137,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		buildSchedule();
 		buildDisplay();
 
-		stopNow = 0; // needed this to keep things from stopping if you run the model multiple times
-						// in a row
+		stopNow = 0; // needed this to keep things from stopping if you run the model multiple times in a row
 
 		displaySurf.display();
 		populationAmountInSpace.display();
