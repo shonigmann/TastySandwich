@@ -56,11 +56,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int maxRabbits = MAX_RABBITS;
 	private int currentNumberRabbits = AMOUNT_RABBITS;
 	private int stopNow = 0;
-	private static RabbitsGrassSimulationModel model; // testing this out to see
-														// if i can
-														// programmatically end
-														// the simulation when
-														// all the rabbits die.
+	private static RabbitsGrassSimulationModel model;
 
 	private Schedule schedule;
 
