@@ -145,6 +145,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		buildModel();
 		buildSchedule();
 		buildDisplay();
+		
+		stopNow = 0; //needed this to keep things from stopping if you run the model multiple times in a row
 
 		displaySurf.display();
 		populationAmountInSpace.display();
@@ -201,14 +203,17 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				tryGrowGrass(grassGrowthRate);
 
 				displaySurf.updateDisplay();
+				//System.out.println("max Rabbits = "+maxRabbits); //for debugging
 				
 				if (stopNow > 10) { //check for condition before the condition is changed so we get one extra time step delay
 					model.stop();
 				}
 				// end simulation if appropriate
 				if (countRabbits() == 0) {
-					if(countGrass() == maxRabbits || grassGrowthRate == 0) //this should let the grass fill in before ending the simulation.
+					if(countGrass() == maxRabbits || grassGrowthRate == 0){ //this should let the grass fill in before ending the simulation.
+						//System.out.println("Grass Count = "+countGrass()+"; max Rabbits = "+maxRabbits + "; grass growth rate: "+grassGrowthRate);//for debugging
 						stopNow++;
+					}
 				}
 
 
@@ -316,14 +321,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	public void setGridSize(int newGridSize) {
 		// scales the maximum number of rabbits according to the selected grid
 		// size
-		setMaxRabbits(gridSize * gridSize);
 		if (newGridSize < 1) {
 	
 			JOptionPane.showMessageDialog(null,
 					"Error: Positive Grid Size Required. System value unchanged.",
 					"Warning: Existential Crisis", JOptionPane.INFORMATION_MESSAGE);
-		} else
+		} 
+		else{
 			gridSize = newGridSize;
+			setMaxRabbits(gridSize * gridSize);
+		}
 	}
 
 	public String[] getInitParam() {
