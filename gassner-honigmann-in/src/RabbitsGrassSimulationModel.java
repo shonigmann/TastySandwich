@@ -33,7 +33,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private static final int GRID_SIZE = 30;
 
 	// Grass Parameters
-	private static final int AMOUNT_GRASS = 40;
 	private static final int GRASS_GROWTH_RATE = 30;
 
 	// Rabbit Parameters
@@ -63,11 +62,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private OpenSequenceGraph populationAmountInSpace;
 	private Histogram rabbitsEnergyDistribution;
 
-	private RabbitsGrassSimulationSpace rgsSpace; // changed to rgs from rabbit
-													// as the space also
-													// includes grass. not just
-													// rabbits
-
+	private RabbitsGrassSimulationSpace rgsSpace;
 	private ArrayList<RabbitsGrassSimulationAgent> rabbitList;
 
 	private DisplaySurface displaySurf;
@@ -153,7 +148,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	public void buildModel() {
 		System.out.println("Running BuildModel");
 		rgsSpace = new RabbitsGrassSimulationSpace(gridSize);
-		tryGrowGrass(AMOUNT_GRASS);
 
 		for (int i = 0; i < amountRabbits; i++) {
 			addNewRabbit();
