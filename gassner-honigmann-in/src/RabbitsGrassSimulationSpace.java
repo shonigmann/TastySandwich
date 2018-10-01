@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import uchicago.src.sim.space.Object2DGrid;
 
 /**
@@ -88,7 +90,7 @@ public class RabbitsGrassSimulationSpace {
 		while ((rabbitPlaced == false)) {
 			int x = (int) (Math.random() * rabbitSpace.getSizeX());
 			int y = (int) (Math.random() * rabbitSpace.getSizeY());
-
+			
 			if (isCellOccupied(x, y) == false) {
 				rabbitSpace.putObjectAt(x, y, bunny);
 				bunny.setXY(x, y);

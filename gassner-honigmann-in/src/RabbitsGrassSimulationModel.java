@@ -168,7 +168,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				SimUtilities.shuffle(rabbitList);
 				boolean pregnant;
 				reapDeadRabbits();
-				int currentRabbitPopulationSize = rabbitList.size();
+				int currentRabbitPopulationSize = rabbitList.size();				
 				for (int i = 0; i < currentRabbitPopulationSize; i++) {
 					RabbitsGrassSimulationAgent rgsa = (RabbitsGrassSimulationAgent) rabbitList.get(i);
 					pregnant = rgsa.step(birthThreshold);
@@ -177,7 +177,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					 * A rabbit can only reproduce if it's pregnant AND the amount of rabbit on the
 					 * board is less than the total amount of tiles.
 					 */
-					if (pregnant && countRabbits() < maxRabbits) {
+					if (pregnant && rabbitList.size() < maxRabbits) {
 						addNewRabbit();
 						rgsa.setEnergy(rgsa.getEnergy() - BIRTH_ENERGY_COST);
 
