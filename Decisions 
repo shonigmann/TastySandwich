@@ -1,0 +1,22 @@
+x Eating grass gives the rabbit the amount of energy GRASS_ENERGY
+
+x If a rabbit is surrounded by rabbits it doesn't move
+
+x Grass can grow under rabbits
+
+"Implement sliders for the following variables of the simulation:"
+=> Sliders? Not input fields ? The default number input fields will do just fine (according to an assistant. Precise it in the report)
+
+x A rabbit loses XXX amount of energy per move
+
+x The energy lost by reproducing is XXX
+
+x We assume the grid to be a square
+
+The field is empty at step 0. 
+
+x The simulation will stop if : xxxx
+
+x We cannot set the number of rabbits as higher than the total amount of available tiles
+
+x We cannot set the growth rate of the grass as higher than the total amount of available tiles
