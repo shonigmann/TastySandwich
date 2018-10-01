@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage[top=0.8in, bottom=0.8in, left=0.8in, right=0.8in]{geometry}
+
+% Add other packages here %
+\usepackage{graphicx}
+
+
+% Put your group number and names in the author field %
+\title{\bf Exercise 1.\\ Implementing a first Application in RePast: A Rabbits Grass Simulation.}
+\author{Group \textnumero76: Simon Honigmann, Arthur Gassner}
+
+\begin{document}
+\maketitle
+
+\section{Implementation}
+
+\subsection{Assumptions}
+% Describe the assumptions of your world model and implementation (e.g. is the grass amount bounded in each cell) %
+On top of the directions given in the exercise, our assumptions are the following :\\
+
+1. Grass can grow on a tile already occupied by a rabbit.
+
+2. If a rabbit is surrounded by rabbits, it simply does not move.
+
+3. The grid is a square
+
+\subsection{Implementation Remarks}
+% Provide important details about your implementation, such as handling of boundary conditions %
+Here are some remarks concerning the way the simulation was implemented :\\
+	
+	1. Eating grass increment the amount of energy of the rabbit by XXX.
+	
+	2. At birth, rabbits have XXX energy.
+	
+	3. Each rabbit loses XXX amount of energy per step
+	
+	4. Birthing a rabbit takes XXX energy.
+	
+	5. When a rabbit has enough energy to give birth but there are already too many rabbits in the space, then XXX
+	
+	6. We cannot set the number of rabbits as higher than the total amount of tiles on the grid. Trying to do so informs the user that it can't be done and the last valid value is used.
+	
+	7. We cannot set the growth rate of the grass as higher than the total amount of tiles on the grid. Trying to do so the user that it can't be done and the last valid value is used.
+	
+	8. The simulation will stop if : xxx
+	
+\section{Results}
+% In this section, you study and describe how different variables (e.g. birth threshold, grass growth rate etc.) or combinations of variables influence the results. Different experiments with diffrent settings are described below with your observations and analysis
+
+\subsection{Experiment 1}
+
+\subsubsection{Setting}
+	
+\subsubsection{Observations}
+% Elaborate on the observed results %
+
+\subsection{Experiment 2}
+
+\subsubsection{Setting}
+
+\subsubsection{Observations}
+% Elaborate on the observed results %
+
+\vdots
+
+\subsection{Experiment n}
+
+\subsubsection{Setting}
+
+\subsubsection{Observations}
+% Elaborate on the observed results %
+
+\end{document}
