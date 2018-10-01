@@ -46,6 +46,9 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private static final int UPPER_BOUND = 50;
 	private static final int BIRTH_ENERGY_COST = 15;
 
+	//REPORT MAKING
+	private static int tickCount = 0;
+	
 	// VARIABLES
 	private int gridSize = GRID_SIZE;
 	private int amountRabbits = AMOUNT_RABBITS;
@@ -137,6 +140,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		buildSchedule();
 		buildDisplay();
 
+		tickCount = 0;// REPORT
 		stopNow = 0; // needed this to keep things from stopping if you run the model multiple times
 						// in a row
 
@@ -164,6 +168,12 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 		class RabbitsGrassSimulationStep extends BasicAction {
 			public void execute() {
+				tickCount++;//REPORT
+				if (tickCount > 1000) {
+					model.stop();
+				}
+				//!REPORT
+				
 				SimUtilities.shuffle(rabbitList);
 				boolean pregnant;
 				reapDeadRabbits();

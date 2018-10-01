@@ -10,8 +10,7 @@ public class RabbitsGrassSimulationSpace {
 	private Object2DGrid grassSpace;
 	private Object2DGrid rabbitSpace;
 
-	private static final int GRASS_ENERGY = 4; // assuming eating grass gives
-												// 10 energy
+	private static final int GRASS_ENERGY = 4; // Energy received by eating grass
 
 	public RabbitsGrassSimulationSpace(int gridSize) {
 		grassSpace = new Object2DGrid(gridSize, gridSize);
