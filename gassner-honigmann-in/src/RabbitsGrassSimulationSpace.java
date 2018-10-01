@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 import uchicago.src.sim.space.Object2DGrid;
 
