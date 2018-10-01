@@ -30,7 +30,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	// CONSTANTS
 	// Display Parameters
-	private static final int GRID_SIZE = 30;
+	private static final int GRID_SIZE = 20;
 
 	// Grass Parameters
 	private static final int GRASS_GROWTH_RATE = 30;
@@ -194,10 +194,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				}
 				// end simulation if appropriate
 				if (countRabbits() == 0) {
-					if (countGrass() == maxRabbits || grassGrowthRate == 0) { // this should let the grass fill in
-																				// before ending the simulation.
-						// System.out.println("Grass Count = "+countGrass()+"; max Rabbits =
-						// "+maxRabbits + "; grass growth rate: "+grassGrowthRate);//for debugging
+					// let the grass fill in before ending the simulation.
+					if (countGrass() == maxRabbits || grassGrowthRate == 0) {
 						stopNow++;
 					}
 				}
@@ -250,8 +248,9 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		int numberRabbits = 0;
 		for (int i = 0; i < rabbitList.size(); i++) {
 			RabbitsGrassSimulationAgent bunny = (RabbitsGrassSimulationAgent) rabbitList.get(i);
-			if (bunny.getEnergy() > 0)
+			if (bunny.getEnergy() > 0) {
 				numberRabbits++;
+			}
 		}
 		System.out.println("Number of rabbits is " + numberRabbits);
 		setCurrentNumberRabbits(numberRabbits);
@@ -261,7 +260,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private void addNewRabbit() {
 		// Create new rabbit and store it in the list
 		RabbitsGrassSimulationAgent bunny = new RabbitsGrassSimulationAgent(rabbitEnergy);
-		// A new rabbit is added to rabbitList ONLY if it was successfully added to the space
+		// A new rabbit is added to rabbitList ONLY if it was successfully added to the
+		// space
 		if (rgsSpace.addRabbit(bunny)) {
 			rabbitList.add(bunny);
 		}
@@ -304,8 +304,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public void setGridSize(int newGridSize) {
-		// scales the maximum number of rabbits according to the selected grid
-		// size
+		// scales the maximum number of rabbits according to the selected grid size
 		if (newGridSize < 1) {
 
 			JOptionPane.showMessageDialog(null, "Error: Positive Grid Size Required. System value unchanged.",
@@ -334,8 +333,9 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			JOptionPane.showMessageDialog(null,
 					"Error: Too many rabbits. Please select a value less than: " + maxRabbits + ". Value unchanged.",
 					"Warning: Rabbit Overload", JOptionPane.INFORMATION_MESSAGE);
-		} else
+		} else {
 			amountRabbits = newAmountRabbits;
+		}
 	}
 
 	public int getBirthThreshold() {
@@ -351,7 +351,13 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public void setGrassGrowthRate(int newGrassGrowthRate) {
-		grassGrowthRate = newGrassGrowthRate;
+		if (newGrassGrowthRate > maxRabbits) {
+			JOptionPane.showMessageDialog(null,
+					"Error: Grass growth rate too big. Please select a value less than: " + maxRabbits + ". Value unchanged.",
+					"Warning: Grass Growth Rate Overload", JOptionPane.INFORMATION_MESSAGE);
+		} else {
+			grassGrowthRate = newGrassGrowthRate;
+		}
 	}
 
 	public void setRabbitEnergy(int newRabbitEnergy) {
